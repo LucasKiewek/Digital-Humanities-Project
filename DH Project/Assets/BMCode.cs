@@ -12,7 +12,7 @@ public class BMCode : MonoBehaviour
   // Start is called before the first frame update
   void Start()
   {
-    addBlackMen(3);
+    AddBlackMen(3);
   }
 
   // Update is called once per frame
@@ -21,7 +21,7 @@ public class BMCode : MonoBehaviour
 
   }
 
-  public void addBlackMen(int amount)
+  public void AddBlackMen(int amount)
   {
     for(int i =0; i < amount; i++){
         Instantiate(BlackManPrefab, Vector3.zero, Quaternion.identity); ///will spawn amount of times given

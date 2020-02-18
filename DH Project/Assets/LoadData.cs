@@ -1,47 +1,48 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Windows;
 
-public class LoadData : MonoBehaviour
+public static class LoadData
 {
-    public List<JobTypes> types = new List<JobTypes>();
+    private static List<RacialEthnicGroupInfo> _racialEthnicGroups = new List<RacialEthnicGroupInfo>();
 
-    // Start is called before the first frame update
-    void Start()
+    public static List<RacialEthnicGroupInfo> GetData()
     {
-      TextAsset DH_Data = Resources.Load<TextAsset>("2018_Data");
-      string[] data = DH_Data.text.Split(new char[] { '\n' });
+        // If not already loaded, load text
+        if (_racialEthnicGroups.Count == 0)
+        {
+            // Load the data as text
+            TextAsset DH_Data = Resources.Load<TextAsset>("2018_Data");
+            string[] data = DH_Data.text.Split(new char[] { '\n' });
 
-      for (int i = 1; i < data.Length; i++)
-      {
-        string[] row = data[i].Split(new char[] { ',' });
+            foreach (string line in data)
+            {
+                // Split string for line by comma
+                string[] row = line.Split(new char[] { ',' });
+                
+                // Create a new RacialEthnicGroupInfo object for this row's racial ethnic group
+                RacialEthnicGroupInfo info = new RacialEthnicGroupInfo(
+                    RacialEthnicGroupInfo.RacialEthnicGroupFromString(row[0])
+                );
 
-        JobTypes t = new JobTypes();
+                // Iterate through columns and set the numbers
+                for (int i = 1; i < row.Length; i++)
+                {
+                    int count;
+                    int.TryParse(row[i], out count);
+                    
+                    // Casting an int to an enum value is sort of like accessing an array by index;
+                    // As long as the enum's declaration is in the same order as the columns in the csv, this code should work
+                    info.AddJobType((JobType) i-1, count);
+                }
+                
+                // Add the info to a list
+                _racialEthnicGroups.Add(info);
+            }
+        }
 
-        t.Racial_Ethnic_Group_and_Sex = row[0];
-        int.TryParse(row[1], out t.Executive_Senior_Level_Officials_and_Managers);
-        int.TryParse(row[2], out t.First_Mid_Level_Officials_and_Managers);
-        int.TryParse(row[3], out t.Professionals);
-        int.TryParse(row[4], out t.Technicians);
-        int.TryParse(row[5], out t.Sales_Workers);
-        int.TryParse(row[6], out t.Office_and_Clerical_Workers);
-        int.TryParse(row[7], out t.Craft_Workers);
-        int.TryParse(row[8], out t.Operatives);
-        int.TryParse(row[9], out t.Laborers);
-        int.TryParse(row[10], out t.Service_Workers);
-
-        types.Add(t);
-      }
+        // Return the list
+        return _racialEthnicGroups;
     }
-
-    public List<JobTypes> GetList()
-    {
-        return types;
-    }
-
-    // // Update is called once per frame
-    // void Update()
-    // {
-    //
-    // }
 }
